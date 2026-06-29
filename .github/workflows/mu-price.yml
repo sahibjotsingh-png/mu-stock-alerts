@@ -1,0 +1,20 @@
+name: MU Price Notifier
+
+on:
+  schedule:
+    - cron: "*/30 13 * * 1-5"   # every 30 min, 13:00 UTC hour (adjust below)
+    - cron: "*/30 14-20 * * 1-5" # covers US market hours, Mon-Fri
+  workflow_dispatch: {}   # lets you manually trigger a test run from GitHub's UI
+
+jobs:
+  check-price:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - run: python check_price.py
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
